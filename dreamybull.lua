@@ -11,7 +11,6 @@ local misc = library:Window("Misc")
 local InfiniteJump = false
 local g_mod = false
 
-
 _G.high_esp = false
 
 combat:Button("Silent Aim", function()
@@ -23,11 +22,21 @@ combat:Button("Silent Aim", function()
 		local closestPlayer = nil
 		local shortestDistance = math.huge
 
-		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-			if v ~= localPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Head") then
+		for _, v in pairs(game:GetService("Players"):GetPlayers()) do
+			-- Vérifie que le joueur est un ennemi
+			if v ~= localPlayer 
+			and v.Team ~= localPlayer.Team -- Ignore les alliés
+			and v.Character 
+			and v.Character:FindFirstChild("Humanoid") 
+			and v.Character.Humanoid.Health > 0 
+			and v.Character:FindFirstChild("HumanoidRootPart") 
+			and v.Character:FindFirstChild("Head") then
+				
+				-- Calcule la distance au curseur
 				local pos = currentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
-				local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(x, y)).magnitude
+				local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(x, y)).Magnitude
 
+				-- Garde le joueur le plus proche
 				if magnitude < shortestDistance then
 					closestPlayer = v
 					shortestDistance = magnitude
